@@ -1,13 +1,13 @@
 # HMarkdown
 
-> **注意**：原 GitHub 账号 [lidary-byte](https://github.com/lidary-byte) 于 2026 年 6 月因被盗用于 GitHub Actions 挖矿而被封禁，本项目已迁移至新账号 [licc](https://github.com/licc)。原仓库的所有链接（Releases、Issues 等）已不可用，请以当前仓库为准。
+> **注意**：原 GitHub 账号 [lidary-byte](https://github.com/lidary-byte) 于 2026 年 6 月因被盗用于 GitHub Actions 挖矿而被封禁，本项目已迁移至新账号 [licc981](https://github.com/licc981981)。原仓库的所有链接（Releases、Issues 等）已不可用，请以当前仓库为准。
 
-[![Downloads](https://img.shields.io/github/downloads/licc/HMarkdown/total?style=for-the-badge&logo=github)](https://github.com/licc/HMarkdown)
-[![Last Version](https://img.shields.io/github/v/release/licc/HMarkdown?style=for-the-badge)](https://github.com/licc/HMarkdown/releases)
-[![License](https://img.shields.io/github/license/licc/HMarkdown?style=for-the-badge)](LICENSE)
-[![OpenHarmony](https://img.shields.io/github/v/release/licc/HMarkdown?style=for-the-badge&logo=harmonyos&color=76CE65
+[![Downloads](https://img.shields.io/github/downloads/licc981/HMarkdown/total?style=for-the-badge&logo=github)](https://github.com/licc981/HMarkdown)
+[![Last Version](https://img.shields.io/github/v/release/licc981/HMarkdown?style=for-the-badge)](https://github.com/licc981/HMarkdown/releases)
+[![License](https://img.shields.io/github/license/licc981/HMarkdown?style=for-the-badge)](LICENSE)
+[![OpenHarmony](https://img.shields.io/github/v/release/licc981/HMarkdown?style=for-the-badge&logo=harmonyos&color=76CE65
 )](https://ohpm.openharmony.cn/#/cn/detail/@lidary%2Fmarkdown)
-[![CHANGELOG](https://img.shields.io/badge/CHANGELOG-E87436?style=for-the-badge&logo=googledocs&logoColor=ffffff)](https://github.com/licc/HMarkdown/blob/main/Markdown/CHANGELOG.md)
+[![CHANGELOG](https://img.shields.io/badge/CHANGELOG-E87436?style=for-the-badge&logo=googledocs&logoColor=ffffff)](https://github.com/licc981/HMarkdown/blob/main/Markdown/CHANGELOG.md)
 
 基于[**marked**](https://github.com/markedjs/marked)的鸿蒙端markdown渲染库
 
@@ -18,22 +18,22 @@
 3. 完全重构
 
 Tips:
-1. **本次更新支持Api变动较大,如需旧版本请查看[→](https://github.com/licc/HMarkdown/blob/feat-v2.0.8)**
+1. **本次更新支持Api变动较大,如需旧版本请查看[→](https://github.com/licc981/HMarkdown/blob/feat-v2.0.8)**
 2. v2.0.8因为没有考虑到子线程内存隔离问题会导致设置的插件不生效
 
 
-### 效果图(如无法预览请前往[Github](https://github.com/licc/HMarkdown))
+### 效果图(如无法预览请前往[Github](https://github.com/licc981/HMarkdown))
 <p align="center">
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/image_1.png" width="20%" alt="图1" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/image_2.png" width="20%" alt="图2" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/image_3.png" width="20%" alt="图3" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/image_4.png" width="20%" alt="图4" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/image_5.png" width="20%" alt="图5" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/dark_image_1.png" width="20%" alt="图6" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/dark_image_2.png" width="20%" alt="图7" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/dark_image_3.png" width="20%" alt="图8" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/dark_image_4.png" width="20%" alt="图9" />
-  <img src="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/screen/dark_image_5.png" width="20%" alt="图10" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/image_1.png" width="20%" alt="图1" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/image_2.png" width="20%" alt="图2" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/image_3.png" width="20%" alt="图3" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/image_4.png" width="20%" alt="图4" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/image_5.png" width="20%" alt="图5" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/dark_image_1.png" width="20%" alt="图6" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/dark_image_2.png" width="20%" alt="图7" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/dark_image_3.png" width="20%" alt="图8" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/dark_image_4.png" width="20%" alt="图9" />
+  <img src="https://github.com/licc981/HMarkdown/blob/main/screen/dark_image_5.png" width="20%" alt="图10" />
 </p>
 
 
@@ -65,7 +65,7 @@ Tips:
 |      lineSpace      |  否   | 12                               |                                                                                              item之间的间距                                                                                              | 
 |    textLineSpace    |  否   | LengthMetrics.vp(12)             |                                                                                            item中text的行间距                                                                                            |
 |       options       |  否   | undefined                        |                                                                    <a href="https://marked.js.org/using_advanced">marked相关配置</a>                                                                    |
-|     extensions      |  否   | undefined                        | <a href="https://marked.js.org/using_advanced#extensions">marked插件</a>,可参考<a href="https://github.com/licc/HMarkdown/blob/feat-v3.0.0/Markdown/src/main/ets/core/plugins/latex.ets">数学公式</a> |
+|     extensions      |  否   | undefined                        | <a href="https://marked.js.org/using_advanced#extensions">marked插件</a>,可参考<a href="https://github.com/licc981/HMarkdown/blob/main/Markdown/src/main/ets/core/plugins/latex.ets">数学公式</a> |
 |     imageClick      |  否   | undefined                        |                                                                                               图片点击事件                                                                                                |
 |      linkClick      |  否   | undefined                        |                                                                                               超链接点击事件                                                                                               |
 | customBlockBuilder  |  否   | undefined                        |                                                                                              自定义块元素渲染                                                                                               |
@@ -167,7 +167,7 @@ Markdown({
 -  [ ] 支持部分html语法
 -  [ ] 支持任务列表语法
 
-## [更新日志](https://github.com/licc/HMarkdown/blob/main/Markdown/CHANGELOG.md)
+## [更新日志](https://github.com/licc981/HMarkdown/blob/main/Markdown/CHANGELOG.md)
 
 ## 开源协议
 
