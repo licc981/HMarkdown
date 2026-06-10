@@ -1,0 +1,97 @@
+name: HarmonyOS CI/CD Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:v5.0.4
+
+    outputs:
+      artifact_name: ${{ steps.rename_har.outputs.new_har_name }}
+      artifact_path:  ${{ steps.rename_har.outputs.new_har_path }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          ohpm install --all
+
+      - name: Build HAR
+        run: |
+          hvigorw clean --no-daemon
+          hvigorw assembleHar --mode module -p module=Markdown@default -p product=default --no-daemon
+
+      - name: Define dynamic naming variables
+        id: naming_vars
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+          echo "build_date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          echo "original_har_name=Markdown.har" >> $GITHUB_OUTPUT
+
+      - name: Rename HAR artifact
+        id: rename_har
+        run: |
+          VERSION=${{ steps.naming_vars.outputs.version }}
+          BUILD_DATE=${{ steps.naming_vars.outputs.build_date }}
+          ORIGINAL_HAR_NAME=${{ steps.naming_vars.outputs.original_har_name }}
+          OUTPUT_DIR=$GITHUB_WORKSPACE/Markdown/build/default/outputs/default
+
+          NEW_HAR_NAME="Markdown-${VERSION}-${BUILD_DATE}.har"
+          ORIGINAL_HAR_PATH="${OUTPUT_DIR}/${ORIGINAL_HAR_NAME}"
+          NEW_HAR_PATH="${OUTPUT_DIR}/${NEW_HAR_NAME}"
+
+          if [ -f "${ORIGINAL_HAR_PATH}" ]; then
+            mv "${ORIGINAL_HAR_PATH}" "${NEW_HAR_PATH}"
+            echo "new_har_name=${NEW_HAR_NAME}" >> $GITHUB_OUTPUT
+            echo "new_har_path=${NEW_HAR_PATH}" >> $GITHUB_OUTPUT
+          else
+            echo "❌ HAR 文件未找到：${ORIGINAL_HAR_PATH}"
+            exit 1
+          fi
+
+      - name: Upload Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.rename_har.outputs.new_har_name }}
+          path: ${{ steps.rename_har.outputs.new_har_path }}
+
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Build Output
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: ./dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true # 自动生成 Release Notes
+          files: ./dist/${{ needs.build.outputs.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

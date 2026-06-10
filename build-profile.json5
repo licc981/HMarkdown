@@ -1,0 +1,59 @@
+{
+  "app": {
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.3(15)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "useNormalizedOHMUrl": true
+          }
+        },
+        "targetSdkVersion": "5.0.3(15)"
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/lidary/.ohos/config/default_HMarkdown_d1RdGfglH1yNW6sR9gse-32NsW7JlsN3uCH4ScfPmdk=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B1CA41AA48E4AD9A778B5E6616E48C41C0D6CACCEE669239CEE25EF61EBB1192120241528B59F7F",
+          "profile": "/Users/lidary/.ohos/config/default_HMarkdown_d1RdGfglH1yNW6sR9gse-32NsW7JlsN3uCH4ScfPmdk=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/lidary/.ohos/config/default_HMarkdown_d1RdGfglH1yNW6sR9gse-32NsW7JlsN3uCH4ScfPmdk=.p12",
+          "storePassword": "0000001BD4104CFB502B0894EDB0EE0E2059A5CE0E91BC2292F569413CF4F418FADEA8BCD7910DBBBB8F66"
+        }
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Markdown",
+      "srcPath": "./Markdown",
+    }
+  ]
+}
