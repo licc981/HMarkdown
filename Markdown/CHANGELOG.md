@@ -1,5 +1,32 @@
 # 更新日志
 
+## v4.0.0-beta1
+
+### 新增
+
+1. **流式输出支持**：新增 `streaming` 属性，设为 `true` 时组件内部逐字符渐进渲染并自动滚动到底部，调用方只需传入完整 `content` 并控制 `streaming` 开关
+2. **LaTeX 渲染缓存**：`latexToPixelMap` 增加模块级缓存（公式文本 + 样式参数为 key），相同公式不再重复渲染，流式输出时公式不闪烁
+3. **Token 增量 Diff**：流式场景下逐位对比新旧 Token 的 `type` 和 `raw`，未变化的保持引用不变，配合 `Repeat.key()` 跳过未变组件的重建
+4. **国际化 Toast**：复制成功/失败的提示文案改为 `$r('app.string.copy_success')` / `$r('app.string.copy_failed')`，支持多语言
+5. **主题类型完善**：新增 `BlockQuoteMargin`、`CodeHighlightColors` 等接口导出；`BlockQuoteStyle` 增加 `contentMargin`、`ListStyle` 增加 `bulletSize`、`CodeStyle` 增加 `codeLineHeight`
+
+### 优化
+
+1. **行内 Token 渲染重构**：215 行 if/else 链改为 switch + 专用 handler 函数，模块级主题缓存避免递归时重复查找
+2. **主题系统重构**：`DefaultTheme` 使用 `createTheme()` 工厂函数 + `ThemeColorParams` 接口消除约 90 行结构性重复
+3. **组件统一风格**：所有 UI 组件使用 `get theme()` getter 获取主题；空 catch 块替换为 `console.warn` 日志
+4. **深度合并增强**：`merge.ts` 增加 `isPlainObject()` 检查，防止 ArkUI 系统类型（`LengthMetrics` 等）被错误深合并
+5. **表格组件**：垂直分隔线改用固定宽度 Column 替代 Divider，行高由内容自然撑开
+
+### 修复
+
+1. **亮色主题段落颜色**：`paragraphStyle` 误用 `defaultDarkFontStyle`（白字显示在白底上）
+2. **分割线颜色**：`Hr` 组件现在正确应用 `dividerColor`
+3. **LaTeX 插件**：修复 `start()` 函数的 `||` 逻辑错误和缺失闭合分隔符时的越界问题
+4. **代码块响应性**：`Code` 组件增加 `@Monitor('token')` 以响应内容变化
+5. **演示页 Loading**：文件读取完成后正确重置 `isLoading` 状态
+6. **表格行高**：移除导致 `Scroll` 纵向撑满 List 项的高度反馈循环
+
 ## v3.0.5 [#38](https://github.com/lidary-byte/HMarkdown/issues/38)
 1. 沉浸式案例、组件增加contentStartOffset、contentEndOffset、paddings、scrollBar、nestedScroll、cachedCount、cachedShow等属性
 2. 优化代码块copy图标显示,增加自定义copy图标、copy图标颜色

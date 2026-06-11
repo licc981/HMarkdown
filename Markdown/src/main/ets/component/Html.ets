@@ -1,7 +1,7 @@
 /**
- * @Author : lcc
- * @CreateData : 2024/7/22
- * @Description:
+ * HTML 块组件
+ *
+ * 将 HTML token 委托给 Inline 组件渲染。
  */
 import { Token } from '../core'
 import { MarkdownOptions } from '../Index'

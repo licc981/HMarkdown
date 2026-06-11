@@ -1,186 +1,197 @@
 /**
- * @Author : lcc
- * @CreateData : 2024/7/4
- * @Description:
+ * 表格组件
+ *
+ * 渲染 Markdown 表格，支持表头、数据行和动态列宽。
  */
-
 import { MarkdownTheme } from '../config/MarkdownTheme'
 import { Tokens } from '../core'
 import { parseInlineToken } from '../core/parseInlineToken'
 import { MarkdownOptions } from '../Index'
 import { getTheme, textAlign } from '../utils'
 
-export const defaultHorPadding: number = 20
+/** 单元格水平内边距 */
+const CELL_HORIZONTAL_PADDING: number = 20
 
-export const itemLineHeight: number = 44
+/** 更新列宽映射表（表头与数据单元格共用逻辑） */
+function updateColumnWidth(widthMap: Map<number, number>, columnIndex: number, measuredWidth: number): void {
+  const currentWidth = widthMap.get(columnIndex)
+  if (currentWidth === undefined || measuredWidth > currentWidth) {
+    widthMap.set(columnIndex, measuredWidth + CELL_HORIZONTAL_PADDING)
+  }
+}
 
+// ─── 表格主体 ───
 
 @ComponentV2
 export struct Table {
   @Param @Require token: Tokens.Table
   @Param @Require options: MarkdownOptions
-  // 每一列最大宽度
-  @Local itemMaxWidth: Map<number, number> = new Map()
+  @Local columnWidths: Map<number, number> = new Map()
+  /** 用私有字段（非 @Local）存储高度，避免测量更新触发额外重渲染形成反馈循环 */
+  private tableHeight: number = 0
+
+  get theme(): MarkdownTheme {
+    return getTheme(this.options)
+  }
 
   build() {
-
     Scroll() {
       Column() {
-        TableHeader({ tokens: this.token?.header, itemMaxWidth: this.itemMaxWidth, theme: getTheme(this.options) })
-        TableBody({ tokens: this.token?.rows, itemMaxWidth: this.itemMaxWidth, options: this.options })
-      }.alignItems(HorizontalAlign.Start)
+        TableHeader({
+          cells: this.token?.header,
+          columnWidths: this.columnWidths,
+          theme: this.theme
+        })
+        TableBody({
+          rows: this.token?.rows,
+          columnWidths: this.columnWidths,
+          options: this.options
+        })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
+        if (typeof newValue.height === 'number' && newValue.height > 0) {
+          this.tableHeight = newValue.height
+        }
+      })
     }
     .scrollable(ScrollDirection.Horizontal)
     .scrollBar(BarState.Off)
-    .borderWidth(getTheme(this.options).tableStyle?.driveWidth)
-    .borderColor(getTheme(this.options).tableStyle?.driveColor)
-
+    .height(this.tableHeight > 0 ? this.tableHeight : undefined)
+    .borderWidth(this.theme.tableStyle?.dividerWidth)
+    .borderColor(this.theme.tableStyle?.dividerColor)
   }
 }
 
+// ─── 表头 ───
 
 @ComponentV2
 export struct TableHeader {
-  @Param @Require tokens: Tokens.TableCell[]
+  @Param @Require cells: Tokens.TableCell[]
   @Param @Require theme: MarkdownTheme
-  @Param @Require itemMaxWidth: Map<number, number>
+  @Param @Require columnWidths: Map<number, number>
 
   build() {
-
     Row() {
-      ForEach(this.tokens, (item: Tokens.TableCell, index: number) => {
-        Text(item.text)
+      ForEach(this.cells, (cell: Tokens.TableCell, index: number) => {
+        Text(cell.text)
           .fontWeight(FontWeight.Bold)
-          .textAlign(textAlign(item.align))
-          .padding({
-            top: 10,
-            bottom: 10,
-            left: 8,
-            right: 8
-          })
+          .textAlign(textAlign(cell.align))
+          .padding({ top: 8, bottom: 8, left: 8, right: 8 })
           .maxLines(1)
-          .width(this.itemMaxWidth[index])
+          .width(this.columnWidths.get(index))
           .fontColor(this.theme.fontStyle?.fontColor)
           .fontSize(this.theme.fontStyle?.fontSize)
           .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
-            const width: number = this.itemMaxWidth[index]
             if (typeof newValue.width === 'number') {
-              if (!width) {
-                this.itemMaxWidth[index] = newValue.width + defaultHorPadding
-              } else {
-                if (newValue.width > width) {
-                  this.itemMaxWidth[index] = newValue.width + defaultHorPadding
-                }
-              }
+              updateColumnWidth(this.columnWidths, index, newValue.width)
             }
           })
 
-
-        if (index != this.tokens.length - 1) {
-          Divider().color(this.theme?.tableStyle?.driveColor)
-            .strokeWidth(this.theme?.tableStyle?.driveWidth)
-            .vertical(true)
+        if (index !== this.cells.length - 1) {
+          Column()
+            .width(this.theme.tableStyle?.dividerWidth ?? 1)
+            .backgroundColor(this.theme.tableStyle?.dividerColor)
         }
       })
-    }.border({
-      width: {
-        bottom: this.theme?.tableStyle?.driveWidth
-      },
-      color: this.theme?.tableStyle?.driveColor
+    }
+    .alignItems(VerticalAlign.Center)
+    .border({
+      width: { bottom: this.theme.tableStyle?.dividerWidth },
+      color: this.theme.tableStyle?.dividerColor
     })
-
-    .height(itemLineHeight)
   }
 }
 
+// ─── 表体 ───
 
 @ComponentV2
 struct TableBody {
-  @Param @Require tokens: Tokens.TableCell[][]
+  @Param @Require rows: Tokens.TableCell[][]
   @Param @Require options: MarkdownOptions
-  @Param @Require itemMaxWidth: Map<number, number>
+  @Param @Require columnWidths: Map<number, number>
+
+  get theme(): MarkdownTheme {
+    return getTheme(this.options)
+  }
 
   build() {
     Column() {
-      ForEach(this.tokens, (row: Tokens.TableCell[], _: number) => {
+      ForEach(this.rows, (row: Tokens.TableCell[]) => {
         Row() {
-          ForEach(row, (item: Tokens.TableCell, index: number) => {
-
-            TableInline({
-              tableCell: item,
-              itemMaxWidth: this.itemMaxWidth,
+          ForEach(row, (cell: Tokens.TableCell, index: number) => {
+            TableCellInline({
+              cell: cell,
+              columnWidths: this.columnWidths,
               index: index,
               options: this.options
             })
 
-            if (index != row.length - 1) {
-              Divider().color(getTheme(this.options).tableStyle?.driveColor)
-                .strokeWidth(getTheme(this.options).tableStyle?.driveWidth)
-                .vertical(true)
+            if (index !== row.length - 1) {
+              Column()
+                .width(this.theme.tableStyle?.dividerWidth ?? 1)
+                .backgroundColor(this.theme.tableStyle?.dividerColor)
             }
-
           })
         }
-
-        .height(itemLineHeight)
+        .alignItems(VerticalAlign.Center)
         .border({
-          width: {
-            bottom: getTheme(this.options).tableStyle?.driveWidth
-          },
-          color: getTheme(this.options).tableStyle?.driveColor
+          width: { bottom: this.theme.tableStyle?.dividerWidth },
+          color: this.theme.tableStyle?.dividerColor
         })
       })
     }
   }
 }
 
+// ─── 单元格 ───
 
 @ComponentV2
-export struct TableInline {
+export struct TableCellInline {
   @Param @Require index: number
-  @Param @Require tableCell: Tokens.TableCell
-  @Param @Require itemMaxWidth: Map<number, number>
+  @Param @Require cell: Tokens.TableCell
+  @Param @Require columnWidths: Map<number, number>
   @Param @Require options: MarkdownOptions
-  inlineTextController = new TextController()
+  private textController = new TextController()
 
   aboutToAppear(): void {
-    this.watchToken()
+    this.parseToken()
   }
 
   @Monitor('options')
-  watchToken() {
+  watchOptions(): void {
+    this.parseToken()
+  }
+
+  private parseToken(): void {
     parseInlineToken({
-      token: this.tableCell.tokens ?? [],
+      token: this.cell.tokens ?? [],
       options: this.options,
       uiContext: this.getUIContext()
-    }).then((data) => {
-      this.inlineTextController.setStyledString(data)
+    }).then((data: MutableStyledString | undefined) => {
+      if (data) {
+        this.textController.setStyledString(data)
+      }
+    }).catch((e: Error) => {
+      console.warn('[HMarkdown] 表格单元格解析失败:', e?.message)
     })
   }
 
+  get theme(): MarkdownTheme {
+    return getTheme(this.options)
+  }
+
   build() {
-    Text(undefined, { controller: this.inlineTextController })
-      .textAlign(textAlign(this.tableCell.align))
-      .fontColor(getTheme(this.options).fontStyle?.fontColor)
-      .padding({
-        top: 10,
-        bottom: 10,
-        left: 8,
-        right: 8
-      })
+    Text(undefined, { controller: this.textController })
+      .textAlign(textAlign(this.cell.align))
+      .fontColor(this.theme.fontStyle?.fontColor)
+      .fontSize(this.theme.fontStyle?.fontSize)
+      .padding({ top: 8, bottom: 8, left: 8, right: 8 })
       .maxLines(1)
-      .fontSize(getTheme(this.options).fontStyle?.fontSize)
-      .width(this.itemMaxWidth[this.index])
+      .width(this.columnWidths.get(this.index))
       .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
-        const width: number = this.itemMaxWidth[this.index]
         if (typeof newValue.width === 'number') {
-          if (!width) {
-            this.itemMaxWidth[this.index] = newValue.width + defaultHorPadding
-          } else {
-            if (newValue.width > width) {
-              this.itemMaxWidth[this.index] = newValue.width + defaultHorPadding
-            }
-          }
+          updateColumnWidth(this.columnWidths, this.index, newValue.width)
         }
       })
   }
